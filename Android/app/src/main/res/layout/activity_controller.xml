@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zapsterstudios.android.Controller">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Movement Speed"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/movementSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:max="9"
+            android:progress="1" />
+
+        <View
+            android:id="@+id/dividerHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="16dp"
+            android:foreground="?attr/colorButtonNormal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dp">
+
+                <Button
+                    android:id="@+id/btnTurnRight"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="60dp"
+                    android:layout_height="150dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@+id/btnTurnLeft"
+                    android:layout_toEndOf="@+id/btnBackwards"
+                    android:text="Turn Right" />
+
+                <Button
+                    android:id="@+id/btnTurnLeft"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="60dp"
+                    android:layout_height="150dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/btnBackwards"
+                    android:text="Turn Left" />
+
+                <Button
+                    android:id="@+id/btnBackwards"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="140dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignStart="@+id/btnForward"
+                    android:text="Backwards" />
+
+                <Button
+                    android:id="@+id/btnForward"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="140dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="Forward" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/verticalHorizontal"
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:foreground="?attr/colorButtonNormal" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="12dp">
+
+                <Button
+                    android:id="@+id/btnRotateRight"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="60dp"
+                    android:layout_height="150dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@+id/btnRotateLeft"
+                    android:layout_toEndOf="@+id/btnDown"
+                    android:text="Rotate Right"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnRotateLeft"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="60dp"
+                    android:layout_height="150dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/btnDown"
+                    android:text="Rotate Left"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnDown"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="140dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignStart="@+id/btnUp"
+                    android:text="Down" />
+
+                <Button
+                    android:id="@+id/btnUp"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="140dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="Up" />
+            </RelativeLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
