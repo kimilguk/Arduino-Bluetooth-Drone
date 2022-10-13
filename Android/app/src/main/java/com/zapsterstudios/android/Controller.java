@@ -1,7 +1,10 @@
 package com.zapsterstudios.android;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +26,8 @@ import android.bluetooth.BluetoothSocket;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.AsyncTask;
+
+import java.io.Console;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -35,9 +40,10 @@ public class Controller extends AppCompatActivity {
     BluetoothSocket btSocket = null;
     private boolean isBtConnected = false;
 
-    // 블루투스 SPP(Serial Port Profile) UUID 고유번호(전세게 공통)
-    static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
+    // 블루투스 SPP(Serial Port Profile) UUID 고유번호(ESP보드에서 지정된 서비스UUID 사용)
+    //static final UUID myUUID = UUID.fromString("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
+    //static final UUID myUUID = UUID.fromString("beb5483e-36e1-4688-b7f5-ea07361b26a8");
+    static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     // UI용 전역 변수지정
     private SeekBar movementSpeed;
 
@@ -68,21 +74,21 @@ public class Controller extends AppCompatActivity {
         // 블루투스에 연결
         new ConnectBT().execute();
 
-        // 스레드로 신호 활성화
+        Log.d("여기", "여기");
+        // 스레드로 신호 활성화 이 부분을 주석 처리 한 후 블루투스 커넥션이 정상 작동 함.
+        /*
         final Handler h = new Handler();
-        h.postDelayed(new Runnable()
-        {
+        h.postDelayed(new Runnable() {
             private long time = 0;
 
             @Override
-            public void run()
-            {
+            public void run() {
                 time += 1000;
                 sendBluetoothSignal("X");
                 h.postDelayed(this, 1000);
             }
         }, 1000);
-
+        */
         // 탐색바 - 이동 속도(저속-고속)
         movementSpeed = (SeekBar) findViewById(R.id.movementSpeed);
         movementSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -106,8 +112,7 @@ public class Controller extends AppCompatActivity {
         btnForward = (Button) findViewById(R.id.btnForward);
         btnForward.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "W", "w");
                 return false;
             }
@@ -117,8 +122,7 @@ public class Controller extends AppCompatActivity {
         btnBackwards = (Button) findViewById(R.id.btnBackwards);
         btnBackwards.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "S", "s");
                 return false;
             }
@@ -128,8 +132,7 @@ public class Controller extends AppCompatActivity {
         btnTurnLeft = (Button) findViewById(R.id.btnTurnLeft);
         btnTurnLeft.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "A", "a");
                 return false;
             }
@@ -139,8 +142,7 @@ public class Controller extends AppCompatActivity {
         btnTurnRight = (Button) findViewById(R.id.btnTurnRight);
         btnTurnRight.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "D", "d");
                 return false;
             }
@@ -150,8 +152,7 @@ public class Controller extends AppCompatActivity {
         btnUp = (Button) findViewById(R.id.btnUp);
         btnUp.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "T", "t");
                 return false;
             }
@@ -161,8 +162,7 @@ public class Controller extends AppCompatActivity {
         btnDown = (Button) findViewById(R.id.btnDown);
         btnDown.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "G", "g");
                 return false;
             }
@@ -172,8 +172,7 @@ public class Controller extends AppCompatActivity {
         btnRotateLeft = (Button) findViewById(R.id.btnRotateLeft);
         btnRotateLeft.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "F", "f");
                 return false;
             }
@@ -183,8 +182,7 @@ public class Controller extends AppCompatActivity {
         btnRotateRight = (Button) findViewById(R.id.btnRotateRight);
         btnRotateRight.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 handleToggleButton(event, "H", "h");
                 return false;
             }
@@ -193,14 +191,14 @@ public class Controller extends AppCompatActivity {
 
     private void handleToggleButton(MotionEvent event, String signalDown, String signalUp) {
         // 버튼 동작 감지
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             // 다운 신호 보내기
             sendBluetoothSignal(signalDown);
 
             // 진동
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             v.vibrate(60);
-        } else if(event.getAction() == MotionEvent.ACTION_UP) {
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
             // 신호를 보내다.
             sendBluetoothSignal(signalUp);
 
@@ -211,10 +209,8 @@ public class Controller extends AppCompatActivity {
     }
 
     private void sendBluetoothSignal(String signal) {
-        if(btSocket != null)
-        {
-            try
-            {
+        if (btSocket != null) {
+            try {
                 btSocket.getOutputStream().write(signal.toString().getBytes());
             } catch (IOException e) {
                 //Toast.makeText(getApplicationContext(), "신호를 보낼 수 없습니다.", Toast.LENGTH_LONG).show();
@@ -238,11 +234,11 @@ public class Controller extends AppCompatActivity {
         int selectID = item.getItemId();
 
         // 연결 해제
-        if(selectID == R.id.action_disconnect) {
-            if(btSocket != null) {
+        if (selectID == R.id.action_disconnect) {
+            if (btSocket != null) {
                 try {
                     btSocket.close();
-                } catch(IOException e) {
+                } catch (IOException e) {
                     Toast.makeText(getApplicationContext(), "연결을 해제할 수 없습니다...", Toast.LENGTH_LONG).show();
                 }
             }
@@ -251,23 +247,23 @@ public class Controller extends AppCompatActivity {
         }
 
         // 종료하기
-        if(selectID == R.id.action_kill) {
+        if (selectID == R.id.action_kill) {
             // 대화상자 열기
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
             alertDialogBuilder
-                .setCancelable(false)
-                .setTitle("드론 끄기")
-                .setMessage("드론 조종을 종료 하시겠습니까?")
-                .setPositiveButton("예, 종료합니다.", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        sendBluetoothSignal("Q");
-                    }
-                })
-                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).show();
+                    .setCancelable(false)
+                    .setTitle("드론 끄기")
+                    .setMessage("드론 조종을 종료 하시겠습니까?")
+                    .setPositiveButton("예, 종료합니다.", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            sendBluetoothSignal("Q");
+                        }
+                    })
+                    .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    }).show();
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
@@ -282,8 +278,7 @@ public class Controller extends AppCompatActivity {
         private boolean ConnectSuccess = true; //기본 연결 설정 값 True
 
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             progress = ProgressDialog.show(Controller.this, "연결 중...", "잠시만 기다려 주세요!!!");  //진행 대화 상자 표시
         }
 
@@ -291,23 +286,37 @@ public class Controller extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... devices) //진행 대화 상자가 표시되는 동안 연결은 백그라운드에서 수행됩니다.
         {
-            try
-            {
-                if (btSocket == null || !isBtConnected)
-                {
+            try {
+                if (btSocket == null || !isBtConnected) {
                     myBluetooth = BluetoothAdapter.getDefaultAdapter();//페어링된 모바일 블루투스 장치 가져오기
                     BluetoothDevice dispositivo = myBluetooth.getRemoteDevice(address);//장치의 주소에 연결하고 사용 가능한지 확인합니다.
+                    //런타임에서 권한 허용 시
+                    /*
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        if (!myBluetooth.isEnabled()) {
+                            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                            startActivityForResult(enableBluetooth, 1);
+                        }
+                    }
+                     */
+                    Log.d("여기1", dispositivo.getName());
+                    Log.d("여기2", String.valueOf(ConnectSuccess));
                     btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(myUUID);//RFCOMM(SPP) 연결 객체 생성
                     BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                    Log.d("여기3", btSocket.toString());
                     btSocket.connect();//연결 시작
                 }
             }
             catch (IOException e)
             {
+                Log.d("여기4", e.toString());
+                Log.d("여기5", String.valueOf(isBtConnected));
+                Log.d("여기6", String.valueOf(ConnectSuccess));
                 ConnectSuccess = false;//시도가 실패하면 여기에서 예외를 확인할 수 있습니다.
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void result) //doInBackground 후에 모든 것이 잘 되었는지 확인합니다.
         {
@@ -326,5 +335,22 @@ public class Controller extends AppCompatActivity {
 
             progress.dismiss();
         }
+    }
+    //프로그램 종료시 변수값 메모리에서 지우기
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onDestroy() {
+        if (btSocket != null) {
+            try {
+                btSocket.close();
+            } catch (Exception e) {
+            }
+            btSocket = null;
+        }
+        if (myBluetooth != null) {
+            myBluetooth = null;
+        }
+        super.onDestroy();
+        //System.exit(0);
     }
 }

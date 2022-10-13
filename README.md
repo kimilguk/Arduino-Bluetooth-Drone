@@ -6,7 +6,9 @@
 - 아두이노 스케치 IED 개발환경: 아두이노 1.8.x 버전
 - 하드웨어 개발환경: 아두이노 ESP32칩셋 WiFi+블루투스내장 기기(상품명: lilygo higrow) 외 기타(아래)
   예전에 작업한 장비 재활용 정보 URL: https://kimilguk.tistory.com/775
-
+### 2022.10.13(목)
+- 원본에 있던 아두이노(Arduino) 소스는 재활용하는 보드(ESP32칩셋)과 호환되지 않아서, 신규 제작할 예정이다.
+- 드론 앱과 아두이노 보드를 연동할 때 java.io.IOException: Connection reset by peer 에러가 나와서 소스 수정 한 후 OK.
 # ---------------------------------------------------
 # 아래 원본 깃 주소
 - https://github.com/ZapsterStudios/Arduino-Bluetooth-Drone

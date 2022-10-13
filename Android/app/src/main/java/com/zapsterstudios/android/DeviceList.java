@@ -1,7 +1,10 @@
 package com.zapsterstudios.android;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,8 +21,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 
-public class DeviceList extends ActionBarActivity
-{
+public class DeviceList extends ActionBarActivity {
     //UI용 전역 변수지정
     Button btnPaired;
     ListView devicelist;
@@ -31,37 +33,32 @@ public class DeviceList extends ActionBarActivity
 
     @SuppressLint("MissingPermission")
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
 
         //UI 객체 생성
-        btnPaired = (Button)findViewById(R.id.button);
-        devicelist = (ListView)findViewById(R.id.listView);
+        btnPaired = (Button) findViewById(R.id.button);
+        devicelist = (ListView) findViewById(R.id.listView);
 
         //블루투스 객체 생성
         myBluetooth = BluetoothAdapter.getDefaultAdapter();
 
-        if(myBluetooth == null)
-        {
+        if (myBluetooth == null) {
             //기기에 블루투스 어댑터가 없다는 메시지 표시
             Toast.makeText(getApplicationContext(), "블루투스 장치를 사용할 수 없음", Toast.LENGTH_LONG).show();
 
             //액티비티 종료
             finish();
-        }
-        else if(!myBluetooth.isEnabled())
-        {
+        } else if (!myBluetooth.isEnabled()) {
             //사용자에게 블루투스를 켜도록 요청
             Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnBTon,1);
+            startActivityForResult(turnBTon, 1);
         }
 
         btnPaired.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 pairedDevicesList();
             }
         });
@@ -69,8 +66,7 @@ public class DeviceList extends ActionBarActivity
     }
 
     @SuppressLint("MissingPermission")
-    private void pairedDevicesList()
-    {
+    private void pairedDevicesList() {
         pairedDevices = myBluetooth.getBondedDevices();
         ArrayList list = new ArrayList();
 
